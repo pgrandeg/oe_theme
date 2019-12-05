@@ -6,6 +6,7 @@
    * Theme implementation for a ECL list of icons with text.
    *
    * Parameters:
+   *   - "variant" (string) (default: 'default')
    *   - "items" (array) (default: [])
    *     - "icon" (string) (default: 'file')
    *     - "text" (string) (default: '')
@@ -14,22 +15,40 @@
 
 {# Internal properties #}
 
+{% set _list_item_class = '' %}
+{% set _list_item_span_class = '' %}
+{% set _icon_size = 'm' %}
 {% set _icon_path = icon_path|default('') %}
+{% set _variant = variant|default('default') %}
+
+{% if _variant == 'small' %}
+  {% set _list_item_class = 'ecl-u-mt-s ' %}
+  {% set _list_item_span_class = 'ecl-u-type-s ecl-u-ml-s' %}
+  {% set _icon_size = 's' %}
+{% endif %}
 
 {# Print the result #}
 
 {% if items %}
 <ul class="ecl-unordered-list ecl-unordered-list--no-bullet">
   {% for _item in items if _item.text %}
-    <li class="ecl-u-d-flex ecl-u-align-items-center ecl-unordered-list__item{{ not loop.first ? ' ecl-u-mt-l' }}">
+    <li class="{{ _list_item_class }}ecl-u-d-flex ecl-u-align-items-center ecl-unordered-list__item{{ not loop.first and _variant == 'default' ? ' ecl-u-mt-l' }}">
       {% include '@ecl-twig/icon' with {
         icon: {
           path: _icon_path,
           type: 'general',
-          name: _item.icon|default('file')
+          name: _item.icon|default('file'),
+          size: _icon_size
         },
         extra_classes: 'ecl-u-mr-s'
-      } only %}{{- _item.text -}}
+      } only %}
+      {% if _variant == 'small' %}
+        <span class="ecl-u-type-s ecl-u-ml-s">
+      {% endif %}
+      {{- _item.text -}}
+      {% if _variant == 'small' %}
+        </span>
+      {% endif %}
     </li>
   {% endfor %}
 </ul>

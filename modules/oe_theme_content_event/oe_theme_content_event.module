@@ -62,6 +62,38 @@ function oe_theme_content_event_preprocess_node__oe_event(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK() for node--oe-event--teaser.html.twig.
+ */
+function oe_theme_content_event_preprocess_node__oe_event__teaser(&$variables) {
+  /** @var \Drupal\node\NodeInterface $node */
+  $node = $variables['node'];
+
+  // Use the short title if present, with fallback to the title.
+  $variables['title'] = !$node->get('oe_content_short_title')->isEmpty() ? $node->get('oe_content_short_title')->value : $node->label();
+
+  $event_type_field = $node->get('oe_event_type');
+  $event_type_value = $event_type_field->value;
+  $event_type_options = $event_type_field->getFieldDefinition()->getSetting('allowed_values');
+  $variables['meta'][] = t('@event_type', ['@event_type' => $event_type_options[$event_type_value]]);
+
+  $date_formatter = \Drupal::service('date.formatter');
+  $dates = _oe_theme_content_event_get_event_dates($node);
+  $variables['meta'][] = $date_formatter->format($dates->getStartTime(), 'oe_theme_event_date');
+  $variables['date'] = $dates;
+
+  $variables['icons_text'] = [
+    [
+      'icon' => 'location',
+      'text' => _oe_theme_content_event_get_rendered_address($node),
+    ],
+    [
+      'icon' => 'livestreaming',
+      'text' => $node->get('oe_event_online_type')->isEmpty() ? '' : t('Live streaming available'),
+    ],
+  ];
+}
+
+/**
  * Helper function to prepare the event registration button array for ECL.
  *
  * @param \Drupal\node\NodeInterface $node
@@ -427,11 +459,13 @@ function _oe_theme_content_event_get_event_dates(NodeInterface $node) {
  *
  * @param \Drupal\node\NodeInterface $node
  *   The event node.
+ * @param string|array $display_options
+ *   The desired display mode or array of display settings.
  *
  * @return array|\Drupal\Component\Render\MarkupInterface|string
  *   The rendered address.
  */
-function _oe_theme_content_event_get_rendered_address(NodeInterface $node) {
+function _oe_theme_content_event_get_rendered_address(NodeInterface $node, $display_options = 'default') {
   /** @var \Drupal\oe_content_event\Entity\EventVenue $event_venue */
   $event_venue = $node->get('oe_event_venue')->entity;
   if ($event_venue->get('postal_address')->isEmpty()) {
@@ -441,7 +475,7 @@ function _oe_theme_content_event_get_rendered_address(NodeInterface $node) {
   /** @var \Drupal\Core\Render\Renderer $renderer */
   $renderer = \Drupal::service('renderer');
   // Get the location of the event from the Venue.
-  $render_array = $event_venue->get('postal_address')->view('default');
+  $render_array = $event_venue->get('postal_address')->view($display_options);
 
   return $renderer->render($render_array);
 }

@@ -1,6 +1,13 @@
 icons_with_text:
   label: "Icons with text"
   description: "A list of icons with a text."
+  variants:
+    default:
+      label: "Icons with text: default"
+      description: "Default icons and text list variant."
+    small:
+      label: "Icons with text: small"
+      description: "Icons with text in small font and icon size."
   fields:
     items:
       type: "array"

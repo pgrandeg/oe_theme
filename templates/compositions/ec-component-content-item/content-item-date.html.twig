@@ -31,6 +31,8 @@
 {% set _image = image|default('') %}
 {% set _image_position = image_position|default('before') %}
 {% set _links = links|default([]) %}
+{% set _icons_text = icons_text|default([]) %}
+{% set _ecl_icon_path = ecl_icon_path|default('o-o') %}
 
 {# Internal logic - Process properties #}
 
@@ -70,6 +72,13 @@
       {%- endif -%}
     </div>
     <div class="ecl-content-item-date__description ecl-u-type-paragraph ecl-u-type-color-grey-100 ecl-u-mt-xs">{{ _description }}</div>
+    {% if _icons_text is not empty %}
+      {% include '@oe_theme/compositions/ec-component-icons-with-text/icons-with-text.html.twig' with {
+        'variant': 'small',
+        'items': _icons_text,
+        'icon_path': _ecl_icon_path,
+      } only %}
+    {% endif %}
   </div>
 </article>
 {% endspaceless %}
