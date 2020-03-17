@@ -6,6 +6,7 @@ namespace Drupal\Tests\oe_theme\Kernel;
 
 use Drupal\Core\Url;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Tests the rendering of the pager component.
@@ -49,9 +50,11 @@ class PagerTest extends AbstractKernelTestBase {
     ];
 
     // Initialize pagers with some fake data.
-    pager_default_initialize(100, 7, 0);
-    pager_default_initialize(100, 7, 1);
-    pager_default_initialize(100, 7, 2);
+    /* @var $pager_manager \Drupal\Core\Pager\PagerManagerInterface */
+    $pager_manager = $this->container->get('pager.manager');
+    $pager_manager->createPager(100, 7, 0);
+    $pager_manager->createPager(100, 7, 1);
+    $pager_manager->createPager(100, 7, 2);
 
     // Set up the current page numbers for pagers.
     global $pager_page_array;
@@ -123,12 +126,14 @@ class PagerTest extends AbstractKernelTestBase {
    * @SuppressWarnings(PHPMD.NPathComplexity)
    */
   public function testSinglePager(int $current_page, int $total_pages, string $route_name = '<none>'): void {
+    /* @var $pager_manager \Drupal\Core\Pager\PagerManagerInterface */
+    $pager_manager = $this->container->get('pager.manager');
     $build['pager'] = [
       '#type' => 'pager',
       '#route_name' => $route_name,
     ];
 
-    pager_default_initialize($total_pages * 10, 10);
+    $pager_manager->createPager($total_pages * 10, 10);
 
     global $pager_page_array;
     // Normalise the current page array to 0-based.
@@ -283,8 +288,10 @@ class PagerTest extends AbstractKernelTestBase {
    *   A string URL.
    */
   protected function generatePagerUrl(string $route_name, int $page, int $element = 0): string {
+    /* @var $pager_manager \Drupal\Core\Pager\PagerManagerInterface */
+    $pager_manager = $this->container->get('pager.manager');
     $options = [
-      'query' => pager_query_add_page([], $element, $page - 1),
+      'query' => $pager_manager->getUpdatedParameters([], $element, $page - 1),
     ];
 
     return Url::fromRoute($route_name, [], $options)->toString();
