@@ -221,3 +221,23 @@ function oe_theme_helper_post_update_20013() {
     ->set('template', 'standardised')
     ->save();
 }
+
+/**
+ * Add default ECL template theme setting.
+ */
+function oe_theme_helper_post_update_20014() {
+  /** @var \Drupal\block\Entity\Block $block */
+  $block = Block::load('oe_theme_main_navigation');
+
+  if (!$block) {
+    return t('The oe_theme_main_navigation block was not found.');
+  }
+
+  if ($block->getTheme() == 'oe_theme') {
+    $block->setVisibilityConfig('oe_theme_helper_current_ecl_template', [
+      'id' => 'oe_theme_helper_current_ecl_template',
+      'ecl_template' => 'standardised',
+    ]);
+    $block->save();
+  }
+}
