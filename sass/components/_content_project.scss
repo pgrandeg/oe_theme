@@ -10,3 +10,6 @@
     margin-left: 0;
   }
 }
+div#project-details div.ecl-col-12.ecl-col-md-6 div + div.ecl-editor {
+  margin-top: $ecl-spacing-2-xs;
+}
