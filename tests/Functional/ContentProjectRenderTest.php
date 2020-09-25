@@ -237,15 +237,14 @@ class ContentProjectRenderTest extends BrowserTestBase {
     $this->assertContains('Project results...', $project_results->getText());
 
     // Assert result file.
-    $file_wrapper = $project_results->find('css', 'div.ecl-file');
-    $file_row = $file_wrapper->find('css', '.ecl-file .ecl-file__container');
-    $file_title = $file_row->find('css', '.ecl-file__title');
+    $file_wrapper = $this->assertSession()->elementExists('css', 'div#project-result-files .ecl-file .ecl-file__container');
+    $file_title = $file_wrapper->find('css', '.ecl-file__title');
     $this->assertContains('Test document project_result', $file_title->getText());
-    $file_info_language = $file_row->find('css', '.ecl-file__info div.ecl-file__language');
+    $file_info_language = $file_wrapper->find('css', '.ecl-file__info div.ecl-file__language');
     $this->assertContains('English', $file_info_language->getText());
-    $file_info_properties = $file_row->find('css', '.ecl-file__info div.ecl-file__meta');
+    $file_info_properties = $file_wrapper->find('css', '.ecl-file__info div.ecl-file__meta');
     $this->assertContains('KB - PDF)', $file_info_properties->getText());
-    $file_download_link = $file_row->find('css', '.ecl-file__download');
+    $file_download_link = $file_wrapper->find('css', '.ecl-file__download');
     $this->assertContains('/sample_project_result.pdf', $file_download_link->getAttribute('href'));
     $this->assertContains('Download', $file_download_link->getText());
 
